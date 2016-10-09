@@ -7,6 +7,7 @@ from xml.sax.handler import ContentHandler
 class SmallSMILHandler(ContentHandler):
 
     def __init__ (self):
+        
         self.DicEtiquetas = {
             'root-layout': ['width','height','background-color'],
             'region': ['id','top','bottom','left','rigth'],
@@ -19,11 +20,11 @@ class SmallSMILHandler(ContentHandler):
     def startElement(self, name, attrs):
     
         if name in self.DicEtiquetas:
-            Dicc = {}
+            dicc = {}
             for atributo in self.DicEtiquetas[name]:
-                Dicc[atributo] = attrs.get(atributo, "")
-            Diccname = {name: dicc}
-        self.lista.append(Dicc)
+                dicc[atributo] = attrs.get(atributo, "")
+            diccname = {name: dicc}
+        self.lista.append(diccname)
 
 
     def get_tags(self):

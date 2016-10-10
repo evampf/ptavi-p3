@@ -8,48 +8,63 @@ from xml.sax.handler import ContentHandler
 from smallsmilhandler import SmallSMILHandler
 from urllib.request import urlretrieve
 
+class KaraokeLocal(SmallSMILHandler):
 
-#class Karaoke():
+    def __init__ (self, fichero):
 
-def Crear_Json(doc):
-    with open(sys.argv[1][:-5]+".json", 'w') as outfile:
-        json.dump(doc, outfile,indent=4,separators=(',', ': ')) 
+        parser = make_parser()
+        cHandler = SmallSMILHandler()
+        parser.setContentHandler(cHandler)
+        try:
+            parser.parse(open(sys.argv[1]))
+        except:
+            sys.exit('Usage: python3 karaoke.py file.smil')
+
+        self.lista = cHandler.get_tags()
 
 
-def Formato_Lista(Lista):
+    def to_json(self,fichero, name = ""):
+        lista_json= json.dumps(self.lista)
+        if name == "":
+            name = sys.argv[1].split('.')[0] + '.json'
+        with open(sys.argv[1][:-5]+".json", 'w') as ficher_json:
+            json.dump(self.lista, ficher_json,indent=4,separators=(',', ': ')) 
 
-    doc = ""
-    for linea in Lista:
-        for name in linea:
-            doc = doc + name 
-            for name2 in linea[name]:
-                doc = doc + "\t" + name2 +' = ' + '"' + linea[name][name2] + '"' 
-            doc = doc + "\n"
 
-    print(doc)
+    def __str__(self):
 
-def Descarga_Contenido(Lista):
+        doc = ""
+        for linea in self.lista:
+            for name in linea:
+                doc = doc + name 
+                for name2 in linea[name]:
+                    doc = doc + "\t" + name2 +' = ' + '"' + linea[name][name2] + '"' 
+                doc = doc + "\n"
 
-   for linea in Lista:
-        for name in linea:
-            for name2 in linea[name]:
-                if linea[name][name2][0:7] == "http://":
-                    print(linea[name][name2])
-                    urlretrieve(linea[name][name2])
+        print(doc)
+
+    def do_local(self):
+
+       for linea in self.lista:
+            for name in linea:
+                for name2 in linea[name]:
+                    if linea[name][name2][0:7] == "http://":
+                        print(linea[name][name2])
+                        urlretrieve(linea[name][name2])
 
 if __name__ == "__main__":
 
-    parser = make_parser()
-    cHandler = SmallSMILHandler()
-    parser.setContentHandler(cHandler)
-    
     try:
-        parser.parse(open(sys.argv[1]))
+        obj_karaokelocal = KaraokeLocal(sys.argv[1])
     except:
         sys.exit('Usage: python3 karaoke.py file.smil')
 
+    obj_karaokelocal.__str__()
+    obj_karaokelocal.to_json(sys.argv[1])
+    obj_karaokelocal.do_local()
+    obj_karaokelocal.to_json(sys.argv[1], 'local.json')
+    obj_karaokelocal.__str__()
 
-    Crear_Json(cHandler.get_tags())
-    Formato_Lista(cHandler.get_tags())
-    Descarga_Contenido(cHandler.get_tags())
-    
+
+
+

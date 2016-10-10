@@ -7,15 +7,15 @@ from xml.sax.handler import ContentHandler
 class SmallSMILHandler(ContentHandler):
 
     def __init__ (self):
-        
+        self.lista = []
         self.DicEtiquetas = {
             'root-layout': ['width','height','background-color'],
             'region': ['id','top','bottom','left','rigth'],
             'img': ['src','region','begin','dur'],
             'audio': ['src','begin','dur'],
             'textstream': ['src','region']
-        }
-        self.lista = []
+            }
+        
 
     def startElement(self, name, attrs):
     
@@ -24,7 +24,7 @@ class SmallSMILHandler(ContentHandler):
             for atributo in self.DicEtiquetas[name]:
                 dicc[atributo] = attrs.get(atributo, "")
             diccname = {name: dicc}
-        self.lista.append(diccname)
+            self.lista.append(diccname)
 
 
     def get_tags(self):
@@ -39,4 +39,4 @@ if __name__ == "__main__":
     cHandler = SmallSMILHandler()
     parser.setContentHandler(cHandler)
     parser.parse(open('karaoke.smil'))
-    print (cHandler.get_tags())
+    print(cHandler.get_tags())
